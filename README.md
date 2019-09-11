@@ -75,6 +75,8 @@ Next you must add a label called "demo_configuration". This can be done by going
 Administration->Event Settings->Label Settings
 ```
 
+**You should make sure that this label is only accessible to admin users. Demo users/workshop users/BOTS users should not have access to this label**
+
 Lastly, you must install your app. You can do this by going to **Apps** and the clicking **Install App**. Select the zipped tarball that was created for you by DABCAT2.0
 
 # Adding action result data to be used by a DABCAT created app
