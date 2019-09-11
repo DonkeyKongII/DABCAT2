@@ -2,6 +2,17 @@
 
 DABCAT2.0 is marked improvement over DABCAT1.0. It's purpose is entirely the same, but it's operation is completely different. Rather than hardcoding action results in the "dummy" app code itself, DABCAT2.0 "dummy" apps pull from a dynamic list of cached action results that are maintained in the Phantom instance on which the "dummy" app is installed. This change in design allows for new action results to be added to the cache without recompiling the "dummy" app. Additionally, because cached data is maintained in Phantom, significantly more people can add content to the action results cache on a given instance.
 
+# Prerequisites to running DABCAT2.0
+
+**Python dependencies**
+* click
+* pyfiglet
+* colorama
+* termcolor
+* PyInquirer
+
+These can bee installed with pip
+
 # Where to run DABCAT2.0
 
 Just like DABCAT1.0, DABCAT2.0 should be run from the source code directory of the app that will be "dummied" up.
