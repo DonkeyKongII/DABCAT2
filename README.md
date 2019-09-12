@@ -120,9 +120,9 @@ All action result data will be maintained and managed by adding containers, arti
     
 # Providing Default Data to an action
 
-There may be some cases where you want to provide default data to an action regardless of the input. Follow the steps outline in the section called **Adding action result data to be used by a DABCAT created app**. However, when you create your artifact instead of providing <parameter_names> for matching, simply add a "dummy_default" and set the value to "True."
+There may be some cases where you want to provide default data to an action regardless of the input. Follow the steps outlined in the section called **Adding action result data to be used by a DABCAT created app**. However, when you create your artifact instead of providing <parameter_names> for matching, simply add a "dummy_default" cef field and set the value to "True."
 
-# Replacing Results Data at run_time:
+# Replacing Results Data at RunTime:
 
 Replacements are handled via json file called replacerizer.json. You'll want to upload this to your container and add a "replacerizer" field to your "matching criteria" artifact with the value set to the vaultId of your uploaded replacerizer.json file.
 
@@ -134,7 +134,7 @@ For simple replacements the key of the JSON value in replacerizer.json is used a
 }
 ```
 
-For dynamic replacements a special syntax is used. A dynamic replacement is a replacement of some data in the results json with a parameter that was provided at run time to the app. This is particularly useful in conjunction with **default data**. To do the replacement values should be \*\*\*<parameter_name>\*\*\*.
+For dynamic replacements a special syntax is used. A dynamic replacement is a replacement of some data in the results json with a parameter that was provided at run time to the app. This is particularly useful in conjunction with **default data**. To do the replacement, values should be crafted as such - \*\*\*<parameter_name>\*\*\*.
 
 For example if I want to replace all instances of "http://www.google.com" with the url parameter that is passed into the action at run time I'd do the following:
 
