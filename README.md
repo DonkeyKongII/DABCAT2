@@ -109,7 +109,7 @@ All action result data will be maintained and managed by adding containers, arti
   * <parameter_name> - This is the parameter you want to match to determine if this action result data should be returned
     * You can have as many <parameter_name> fields as you'd like. They will be "and"'d together.
 
-Example: If I want to return cached action results for a VirusTotal URL reputation check when someone passes in "http://www.google.com" as the **url** parameter, I'd do the following. In this example the Vendor Name of my DABCAT created app is "virustotal DEV":
+**Example:** If I want to return cached action results for a VirusTotal URL reputation check when someone passes in "http://www.google.com" as the **url** parameter, I'd do the following. In this example the Vendor Name of my DABCAT created app is "virustotal DEV":
 1. Create a container called "virustotal DEV" with a description of "lookup url"
   * note: the the identifier of the url reputation action for virustotal is "lookup url"
 2. Upload action results from a previously executed lookup of "http://www.google.com" to the files area of the container.
