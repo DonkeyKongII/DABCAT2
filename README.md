@@ -100,10 +100,10 @@ All action result data will be maintained and managed by adding containers, arti
   * The container name must match EXACTLY the product name of the DABCAT created app that you wish to supply cached data to. 
     * If you are unsure of the product name, you can look in the *.json file for the **product_name** key.
   * The description should be the action identifier for the action of the DABCAT created app to which you want to supply cached data. 
-    * If you are unsure of the action identifier, you can look in the *.json file for the **name** of the action under the **actions** key. Once you have found the right action look at the **identifier** key. Generally these will be the very closely aligned but sometimes they are not (e.g. virustotal action name is "url reputation" but the identifier is "lookup_url"
+    * If you are unsure of the action identifier, you can look in the *.json file for the **name** of the action under the **actions** key. Once you have found the right action look at the **identifier** key. Generally these will be the very closely aligned but sometimes they are not (e.g. virustotal action name is "url reputation" but the identifier is "lookup_url")
 2. Upload the action results json you'd like to use to the "files" (previously known as "vault") area of your new container.
   * copy the vaultId from this area after successful upload
-3. Create an artifact title **matching criteria**
+3. Create an artifact titled **matching criteria**
 4. Add the following CEF fields to the artifact:
   * vaultId - This should be the vaultId that points to your upload action results json
   * <parameter_name> - This is the parameter you want to match to determine if this action result data should be returned
