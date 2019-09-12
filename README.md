@@ -94,10 +94,10 @@ Lastly, you must install your app. You can do this by going to **Apps** and the 
 
 All action result data will be maintained and managed by adding containers, artifacts, and files to the "demo_configuration" label you created in the **Configuring Phantom to use a DABCAT2.0 created app** section.
 
-**If you want to supply a cached action result json when a specific parameter is provided to a DABCAT created app action do the following:**
+**If you want to supply a cached action result json when a specific parameter is provided to a DABCAT app, action do the following:**
 
 1. Create a container in the "demo_configuration" label
-  * The container name match EXACTLY the product name of the DABCAT created app that you wish to supply cached data to. 
+  * The container name must match EXACTLY the product name of the DABCAT created app that you wish to supply cached data to. 
     * If you are unsure of the product name, you can look in the *.json file for the **product_name** key.
   * The description should be the action identifier for the action of the DABCAT created app to which you want to supply cached data. 
     * If you are unsure of the action identifier, you can look in the *.json file for the **name** of the action under the **actions** key. Once you have found the right action look at the **identifier** key. Generally these will be the very closely aligned but sometimes they are not (e.g. virustotal action name is "url reputation" but the identifier is "lookup_url"
