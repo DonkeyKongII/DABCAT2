@@ -105,10 +105,10 @@ All action result data will be maintained and managed by adding containers, arti
   * copy the vaultId from this area after successful upload
 3. Create an artifact titled **matching criteria**
 4. Add the following CEF fields to the artifact:
-  * vaultId - This should be the vaultId that points to your upload action results json
+  * vaultId - This should be the vaultId that points to your uploaded action results json
   * <parameter_name> - This is the parameter you want to match to determine if this action result data should be returned
     * You can have as many <parameter_name> fields as you'd like. They will be "and"'d together.
-    
+
 Example: If I want to return cached action results for a VirusTotal URL reputation check when someone passes in "http://www.google.com" as the **url** parameter, I'd do the following. In this example the Vendor Name of my DABCAT created app is "virustotal DEV":
 1. Create a container called "virustotal DEV" with a description of "lookup url"
   * note: the the identifier of the url reputation action for virustotal is "lookup url"
