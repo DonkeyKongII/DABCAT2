@@ -160,23 +160,52 @@ def read_important_files():
 
 
 def process_data():
-    processed_actions = []
-
-    handle_action_re = re.compile(r'([ ]+def handle_action\([^)]+\)\:\n)')    
+    handle_action_re = re.compile(r'([ ]+def handle_action\([^)]+\)\:\n)')
     handle_action_match = handle_action_re.search(IMPORTANT_FILES['connector_data'])
     tab = ' ' * (len(handle_action_match.groups()[0]) - len(handle_action_match.groups()[0].lstrip()))
 
     additional_imports = ''
-    if 'import re' not in IMPORTANT_FILES['connector_data'].lower():
+    if 'import re\n' not in IMPORTANT_FILES['connector_data'].lower():
         additional_imports += 'import re\n'
     if 'import json' not in IMPORTANT_FILES['connector_data'].lower():
         additional_imports += 'import json\n'
-    if 'from phantom.vault import vault' not in IMPORTANT_FILES['connector_data'].lower():
+    if 'from phantom.vault import Vault' not in IMPORTANT_FILES['connector_data'].lower():
         additional_imports += 'from phantom.vault import Vault\n'
     if 'import uuid' not in IMPORTANT_FILES['connector_data'].lower():
         additional_imports += 'import uuid\n'
     if 'import tarfile' not in IMPORTANT_FILES['connector_data'].lower():
         additional_imports += 'import tarfile\n'
+    if 'import os' not in IMPORTANT_FILES['connector_data'].lower():
+        additional_imports += 'import os\n'
+    if 'from phantom.action_result import ActionResult'.lower() not in IMPORTANT_FILES['connector_data'].lower():
+        additional_imports += 'from phantom.action_result import ActionResult'
+    if 'import requests' not in IMPORTANT_FILES['connector_data'].lower():
+        additional_imports += 'import requests'
+
+    check_if_data_match_code = \
+        '{tab}{tab}def _dabcat_get_data(endpoint, params=None):\n' \
+        '{tab}{tab}{tab}dabcat_base_url = self._get_phantom_base_url()\n' \
+        '{tab}{tab}{tab}headers = {{\'ph-auth-token\': os.environ[\'PHANTOM_API_KEY\']}}\n' \
+        '{tab}{tab}{tab}try:\n' \
+        '{tab}{tab}{tab}{tab}r = requests.get(\'{{0}}rest/{{1}}\'.format(dabcat_base_url, endpoint), params=params, headers=headers, verify=False)\n' \
+        '{tab}{tab}{tab}except Exception as e:\n' \
+        '{tab}{tab}{tab}{tab}message = (\'Action run failed. Exception: {{0}}\').format(e.message)\n' \
+        '{tab}{tab}{tab}{tab}return False, message\n' \
+        '{tab}{tab}{tab}if r is None:\n' \
+        '{tab}{tab}{tab}{tab}return False, \'Unable to retrieve configuration data\'\n' \
+        '{tab}{tab}{tab}return True, r.json()\n\n' \
+        '{tab}{tab}dabcat_app_json = self.get_app_json()\n' \
+        '{tab}{tab}dabcat_app_product = dabcat_app_json[\'product_name\']\n' \
+        '{tab}{tab}action = self.get_action_identifier()\n' \
+        '{tab}{tab}params = {{\'_filter_label\': \'"demo_configuration"\', \'_filter_name\': \'"{{0}}"\'.format(dabcat_app_product), \'_filter_description__icontains\': \'"{{0}}"\'.format(action)}}\n' \
+        '{tab}{tab}success, demo_config_container = _dabcat_get_data(\'container\', params=params)\n' \
+        '{tab}{tab}if (success and demo_config_container[\'count\'] > 0) or ({fail_option} == True):\n' \
+        '{tab}{tab}{tab}return True\n'.format(tab=tab, fail_option=IMPORTANT_SETTINGS['fail_on_data_not_found'])
+
+    IMPORTANT_FILES['connector_data'] = fix_ize(IMPORTANT_FILES['connector_data'], r'([ ]+def initialize\([^)]+\)\:\n)', check_if_data_match_code)
+    IMPORTANT_FILES['connector_data'] = fix_ize(IMPORTANT_FILES['connector_data'], r'([ ]+def finalize\([^)]+\)\:\n)', check_if_data_match_code)
+
+    handle_action_match = handle_action_re.search(IMPORTANT_FILES['connector_data'])
 
     connector_data_part_1 = IMPORTANT_FILES['connector_data'][0:handle_action_match.span()[1]]
     connector_data_part_2 = IMPORTANT_FILES['connector_data'][handle_action_match.span()[1]:]
@@ -280,8 +309,9 @@ def process_data():
         '{tab}{tab}{tab}return True\n\n' \
         '{tab}{tab}def _dabcat_get_data(endpoint, params=None):\n' \
         '{tab}{tab}{tab}dabcat_base_url = self._get_phantom_base_url()\n' \
+        '{tab}{tab}{tab}headers = {{\'ph-auth-token\': os.environ[\'PHANTOM_API_KEY\']}}\n' \
         '{tab}{tab}{tab}try:\n' \
-        '{tab}{tab}{tab}{tab}r = requests.get(\'{{0}}rest/{{1}}\'.format(dabcat_base_url, endpoint), params=params, verify=False)\n' \
+        '{tab}{tab}{tab}{tab}r = requests.get(\'{{0}}rest/{{1}}\'.format(dabcat_base_url, endpoint), params=params, headers=headers, verify=False)\n' \
         '{tab}{tab}{tab}except Exception as e:\n' \
         '{tab}{tab}{tab}{tab}message = (\'Action run failed. Exception: {{0}}\').format(e.message)\n' \
         '{tab}{tab}{tab}{tab}return False, message\n' \
@@ -310,11 +340,11 @@ def process_data():
         '{tab}{tab}{tab}for replace_value in replacerizer_json.keys():\n' \
         '{tab}{tab}{tab}{tab}action_result_data = action_result_data.replace(replace_value, replacerizer_json[replace_value])\n' \
         '{tab}{tab}{tab}replacerizer_wholesale = r\'(?:\\*\\*\\*)([^\\*]+)(?:\\*\\*\\*)\'\n' \
-        '{tab}{tab}{tab}action_result_data = re.sub(replacerizer_wholesale, lambda x: param[x.group().replace(\'*\',\'\')], action_result_data)\n' \
+        '{tab}{tab}{tab}action_result_data = re.sub(replacerizer_wholesale, lambda x: param.get(x.group().replace(\'*\',\'\')), action_result_data)\n' \
         '{tab}{tab}{tab}return True, action_result_data\n\n' \
         '{tab}{tab}params = {{\'_filter_label\': \'"demo_configuration"\', \'_filter_name\': \'"{{0}}"\'.format(dabcat_app_product), \'_filter_description__icontains\': \'"{{0}}"\'.format(action)}}\n' \
         '{tab}{tab}success, demo_config_container = _dabcat_get_data(\'container\', params=params)\n' \
-        '{tab}{tab}if (not(success) or demo_config_container[\'count\']) == 0 and {fail_option} == True:\n' \
+        '{tab}{tab}if (not(success) or demo_config_container[\'count\'] == 0) and {fail_option} == True:\n' \
         '{tab}{tab}{tab}return _dabcat_early_failure(\'There is no data for the action/parameter selected\')\n' \
         '{tab}{tab}elif success:\n' \
         '{tab}{tab}{tab}matching_artifact = None\n' \
@@ -341,7 +371,7 @@ def process_data():
         '{tab}{tab}{tab}{tab}{tab}else:\n' \
         '{tab}{tab}{tab}{tab}{tab}{tab}other_artifacts.append(artifact)\n' \
         '{tab}{tab}{tab}{tab}if matching_artifact:\n' \
-        '{tab}{tab}{tab}{tab}{tab}param_matches = [param.get(cef_key) == matching_artifact[\'cef\'][cef_key] for cef_key in matching_artifact[\'cef\'].keys() if cef_key != \'replacerizer\' and cef_key != \'dummy_file_vault_id\']\n' \
+        '{tab}{tab}{tab}{tab}{tab}param_matches = [str(param.get(cef_key)).lower() == str(matching_artifact[\'cef\'][cef_key]).lower() for cef_key in matching_artifact[\'cef\'].keys() if cef_key != \'replacerizer\' and cef_key != \'dummy_file_vault_id\']\n' \
         '{tab}{tab}{tab}{tab}{tab}if all(param_matches):\n' \
         '{tab}{tab}{tab}{tab}{tab}{tab}break\n' \
         '{tab}{tab}{tab}{tab}{tab}else:\n' \
@@ -366,13 +396,9 @@ def process_data():
         '{tab}{tab}{tab}{tab}elif data_artifact:\n' \
         '{tab}{tab}{tab}{tab}{tab}other_artifacts = other_artifacts if matching_artifact else default_other_artifacts\n' \
         '{tab}{tab}{tab}{tab}{tab}action_result_data = None\n' \
-        '{tab}{tab}{tab}{tab}{tab}try:\n' \
-        '{tab}{tab}{tab}{tab}{tab}{tab}vault_success, action_result_data = _dabcat_get_vault_data(data_artifact[\'cef\'].get(\'dummy_file_vault_id\',\'\').strip())\n' \
-        '{tab}{tab}{tab}{tab}{tab}{tab}vault_path = Vault.get_file_path(data_artifact[\'cef\'].get(\'dummy_file_vault_id\',\'\').strip())\n' \
-        '{tab}{tab}{tab}{tab}{tab}{tab}with open(vault_path, \'r\') as vault_file:\n' \
-        '{tab}{tab}{tab}{tab}{tab}{tab}{tab}action_result_data = vault_file.read()\n' \
-        '{tab}{tab}{tab}{tab}{tab}except Exception as err:\n' \
-        '{tab}{tab}{tab}{tab}{tab}{tab}return _dabcat_early_failure(\'Unable to retrieve data. Details - {{0}}\'.format(str(err)))\n' \
+        '{tab}{tab}{tab}{tab}{tab}vault_success, action_result_data = _dabcat_get_vault_data(data_artifact[\'cef\'].get(\'dummy_file_vault_id\',\'\').strip())\n' \
+        '{tab}{tab}{tab}{tab}{tab}if not(vault_success):\n' \
+        '{tab}{tab}{tab}{tab}{tab}{tab}return action_result.get_status()\n' \
         '{tab}{tab}{tab}{tab}{tab}action_result = self.add_action_result(ActionResult(dict(param)))\n' \
         '{tab}{tab}{tab}{tab}{tab}if data_artifact[\'cef\'].get(\'replacerizer\'):\n' \
         '{tab}{tab}{tab}{tab}{tab}{tab}success, action_result_data = _dabcat_replacerize(action_result_data, data_artifact[\'cef\'].get(\'replacerizer\'))\n' \
@@ -384,7 +410,12 @@ def process_data():
         '{tab}{tab}{tab}{tab}{tab}{tab}return _dabcat_early_failure(\'Unable to load data. Details - {{0}}\'.format(str(err)))\n' \
         '{tab}{tab}{tab}{tab}{tab}action_result.update_summary(action_result_data[0][\'summary\'])\n' \
         '{tab}{tab}{tab}{tab}{tab}for data_result in action_result_data:\n' \
-        '{tab}{tab}{tab}{tab}{tab}{tab}action_result.add_data(data_result[\'data\'])\n' \
+        '{tab}{tab}{tab}{tab}{tab}{tab}if type(data_result[\'data\']) == list:\n' \
+		'{tab}{tab}{tab}{tab}{tab}{tab}{tab}for data_element in data_result[\'data\']:\n' \
+		'{tab}{tab}{tab}{tab}{tab}{tab}{tab}{tab}action_result.add_data(data_element)\n' \
+		'{tab}{tab}{tab}{tab}{tab}{tab}else:\n' \
+		'{tab}{tab}{tab}{tab}{tab}{tab}{tab}action_result.add_data(data_result[\'data\'])\n' \
+        '{tab}{tab}{tab}{tab}{tab}_dabcat_add_other_artifacts(other_artifacts, data_artifact[\'cef\'].get(\'replacerizer\'))\n' \
         '{tab}{tab}{tab}{tab}{tab}return action_result.set_status(phantom.APP_SUCCESS, \'{{0}}\'.format(action_result_data[0][\'message\']))\n'.format(
             tab=tab, fail_option=IMPORTANT_SETTINGS['fail_on_data_not_found']
         )
@@ -401,6 +432,17 @@ def process_data():
     IMPORTANT_FILES['connector_data'] = final_data
     
     return
+
+def fix_ize(connector_code, regex, code_to_inject):
+    ize_re = re.compile(regex)
+    match = ize_re.search(connector_code)
+    if match and len(match.groups()) > 0:
+        connector_data_part_1 = connector_code[0:match.span()[1]]
+        connector_data_part_2 = connector_code[match.span()[1]:]
+        connector_data_part_1 += code_to_inject
+        connector_code = connector_data_part_1 + connector_data_part_2
+
+    return connector_code
 
 
 def collect_settings():
