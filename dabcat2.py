@@ -301,7 +301,7 @@ def process_data():
         '{tab}{tab}{tab}{tab}{tab}other_artifact = json.loads(other_artifact)\n' \
         '{tab}{tab}{tab}{tab}if other_artifact[\'cef\'].get(\'vaultId\'):\n' \
         '{tab}{tab}{tab}{tab}{tab}_, _, vault_info = ph_rules.vault_info(vault_id=other_artifact[\'cef\'][\'vaultId\'], container_id=other_artifact[\'container\'])\n' \
-        '{tab}{tab}{tab}{tab}{tab}Vault.add_attachment(phantom.rules.vault_info(other_artifact[\'cef\'][\'vaultId\']), self.get_container_id(), file_name=vault_info[0][\'name\'])\n' \
+        '{tab}{tab}{tab}{tab}{tab}Vault.add_attachment(ph_rules.vault_info(other_artifact[\'cef\'][\'vaultId\']), self.get_container_id(), file_name=vault_info[0][\'name\'])\n' \
         '{tab}{tab}{tab}{tab}other_artifact = _dabcat_strip_artifact_identifiers(other_artifact)\n' \
         '{tab}{tab}{tab}{tab}other_artifact[\'container_id\'] = self.get_container_id()\n' \
         '{tab}{tab}{tab}{tab}status, message, artifact_id = self.save_artifact(other_artifact)\n' \
