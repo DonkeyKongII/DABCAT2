@@ -300,7 +300,7 @@ def process_data():
         '{tab}{tab}{tab}{tab}{tab}{tab}return False\n' \
         '{tab}{tab}{tab}{tab}{tab}other_artifact = json.loads(other_artifact)\n' \
         '{tab}{tab}{tab}{tab}if other_artifact[\'cef\'].get(\'vaultId\'):\n' \
-        '{tab}{tab}{tab}{tab}{tab}_, _, vault_info = ph_rules.vault_info(vault_id=other_artifact[\'cef\'][\'vaultId\'], container_id=other_artifact[\'container\'])\n' \
+        '{tab}{tab}{tab}{tab}{tab}_, _, vault_info = ph_rules.vault_info(vault_id=other_artifact[\'cef\'][\'vaultId\'].strip(), container_id=other_artifact[\'container\'])\n' \
         '{tab}{tab}{tab}{tab}{tab}Vault.add_attachment(ph_rules.vault_info(other_artifact[\'cef\'][\'vaultId\']), self.get_container_id(), file_name=vault_info[0][\'name\'])\n' \
         '{tab}{tab}{tab}{tab}other_artifact = _dabcat_strip_artifact_identifiers(other_artifact)\n' \
         '{tab}{tab}{tab}{tab}other_artifact[\'container_id\'] = self.get_container_id()\n' \
@@ -328,7 +328,7 @@ def process_data():
         '{tab}{tab}def _dabcat_get_vault_data(vault_id):\n' \
         '{tab}{tab}{tab}vault_data = None\n' \
         '{tab}{tab}{tab}try:\n' \
-        '{tab}{tab}{tab}{tab}_, _, vault_path = ph_rules.vault_info(vault_id)\n' \
+        '{tab}{tab}{tab}{tab}_, _, vault_path = ph_rules.vault_info(vault_id.strip())\n' \
         '{tab}{tab}{tab}{tab}vault_path = list(vault_path)[0][\'path\']\n' \
         '{tab}{tab}{tab}{tab}with open(vault_path, \'r\') as vault_file:\n' \
         '{tab}{tab}{tab}{tab}{tab}vault_data = vault_file.read()\n' \
