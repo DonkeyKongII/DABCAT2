@@ -178,9 +178,11 @@ def process_data():
     if 'import os' not in IMPORTANT_FILES['connector_data'].lower():
         additional_imports += 'import os\n'
     if 'from phantom.action_result import ActionResult'.lower() not in IMPORTANT_FILES['connector_data'].lower():
-        additional_imports += 'from phantom.action_result import ActionResult'
+        additional_imports += 'from phantom.action_result import ActionResult\n'
     if 'import requests' not in IMPORTANT_FILES['connector_data'].lower():
-        additional_imports += 'import requests'
+        additional_imports += 'import requests\n'
+    if 'import phantom.rules as ph_rules' not in IMPORTANT_FILES['connector_data'].lower():
+        additional_imports += 'import phantom.rules as ph_rules\n'
 
     check_if_data_match_code = \
         '{tab}{tab}def _dabcat_get_data(endpoint, params=None):\n' \
@@ -229,8 +231,9 @@ def process_data():
         '{tab}{tab}{tab}return artifact_data\n\n' \
         '{tab}{tab}def _dabcat_get_poll_vault_data(poll_vault_id, label):\n' \
         '{tab}{tab}{tab}poll_vault_id = poll_vault_id.strip()\n' \
-        '{tab}{tab}{tab}poll_vault_path = Vault.get_file_path(poll_vault_id.strip())\n' \
-        '{tab}{tab}{tab}poll_vault_info = Vault.get_file_info(vault_id=poll_vault_id.strip())\n' \
+        '{tab}{tab}{tab}_, _, poll_vault_path = ph_rules.vault_info(poll_vault_id.strip())\n' \
+        '{tab}{tab}{tab}poll_vault_path = list(poll_vault_path)[0][\'path\']\n' \
+        '{tab}{tab}{tab}_, _, poll_vault_info = ph_rules.vault_info(vault_id=poll_vault_id.strip())\n' \
         '{tab}{tab}{tab}poll_vault_tmp_path = \'{{0}}/{{1}}\'.format(Vault.get_vault_tmp_dir(), poll_vault_info[0][\'name\'].replace(\'.tgz\',\'\'))\n' \
         '{tab}{tab}{tab}poll_vault_container_json = None\n' \
         '{tab}{tab}{tab}poll_vault_container_files = []\n' \
@@ -297,8 +300,8 @@ def process_data():
         '{tab}{tab}{tab}{tab}{tab}{tab}return False\n' \
         '{tab}{tab}{tab}{tab}{tab}other_artifact = json.loads(other_artifact)\n' \
         '{tab}{tab}{tab}{tab}if other_artifact[\'cef\'].get(\'vaultId\'):\n' \
-        '{tab}{tab}{tab}{tab}{tab}vault_info = Vault.get_file_info(vault_id=other_artifact[\'cef\'][\'vaultId\'], container_id=other_artifact[\'container\'])\n' \
-        '{tab}{tab}{tab}{tab}{tab}Vault.add_attachment(Vault.get_file_path(other_artifact[\'cef\'][\'vaultId\']), self.get_container_id(), file_name=vault_info[0][\'name\'])\n' \
+        '{tab}{tab}{tab}{tab}{tab}_, _, vault_info = ph_rules.vault_info(vault_id=other_artifact[\'cef\'][\'vaultId\'].strip(), container_id=other_artifact[\'container\'])\n' \
+        '{tab}{tab}{tab}{tab}{tab}Vault.add_attachment(ph_rules.vault_info(other_artifact[\'cef\'][\'vaultId\']), self.get_container_id(), file_name=vault_info[0][\'name\'])\n' \
         '{tab}{tab}{tab}{tab}other_artifact = _dabcat_strip_artifact_identifiers(other_artifact)\n' \
         '{tab}{tab}{tab}{tab}other_artifact[\'container_id\'] = self.get_container_id()\n' \
         '{tab}{tab}{tab}{tab}status, message, artifact_id = self.save_artifact(other_artifact)\n' \
@@ -325,7 +328,8 @@ def process_data():
         '{tab}{tab}def _dabcat_get_vault_data(vault_id):\n' \
         '{tab}{tab}{tab}vault_data = None\n' \
         '{tab}{tab}{tab}try:\n' \
-        '{tab}{tab}{tab}{tab}vault_path = Vault.get_file_path(vault_id)\n' \
+        '{tab}{tab}{tab}{tab}_, _, vault_path = ph_rules.vault_info(vault_id.strip())\n' \
+        '{tab}{tab}{tab}{tab}vault_path = list(vault_path)[0][\'path\']\n' \
         '{tab}{tab}{tab}{tab}with open(vault_path, \'r\') as vault_file:\n' \
         '{tab}{tab}{tab}{tab}{tab}vault_data = vault_file.read()\n' \
         '{tab}{tab}{tab}except Exception as err:\n' \
