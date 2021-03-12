@@ -229,6 +229,11 @@ def process_data():
         '{tab}{tab}{tab}artifact_data.pop(\'owner_id\', None)\n' \
         '{tab}{tab}{tab}artifact_data[\'ingest_app_id\'] = dabcat_appid\n' \
         '{tab}{tab}{tab}return artifact_data\n\n' \
+        '{tab}{tab}def _dabcat_get_phantom_base_url(self):\n' \
+        '{tab}{tab}{tab}base_url = self._get_phantom_base_url()\n' \
+        '{tab}{tab}{tab}if "PHANTOM_BASE_URL" in os.environ:\n' \
+        '{tab}{tab}{tab}{tab}base_url = os.environ["PHANTOM_BASE_URL"]\n' \
+        '{tab}{tab}{tab}return base_url\n' \
         '{tab}{tab}def _dabcat_get_poll_vault_data(poll_vault_id, label):\n' \
         '{tab}{tab}{tab}poll_vault_id = poll_vault_id.strip()\n' \
         '{tab}{tab}{tab}_, _, poll_vault_path = ph_rules.vault_info(poll_vault_id.strip())\n' \
@@ -311,7 +316,7 @@ def process_data():
         '{tab}{tab}{tab}{tab}\n' \
         '{tab}{tab}{tab}return True\n\n' \
         '{tab}{tab}def _dabcat_get_data(endpoint, params=None):\n' \
-        '{tab}{tab}{tab}dabcat_base_url = self._get_phantom_base_url()\n' \
+        '{tab}{tab}{tab}dabcat_base_url = self._dabcat_get_phantom_base_url()\n' \
         '{tab}{tab}{tab}headers = {{\'ph-auth-token\': os.environ[\'PHANTOM_API_KEY\']}}\n' \
         '{tab}{tab}{tab}try:\n' \
         '{tab}{tab}{tab}{tab}r = requests.get(\'{{0}}rest/{{1}}\'.format(dabcat_base_url, endpoint), params=params, headers=headers, verify=False)\n' \
