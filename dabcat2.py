@@ -199,7 +199,7 @@ def process_data():
         '{tab}{tab}dabcat_app_json = self.get_app_json()\n' \
         '{tab}{tab}dabcat_app_product = dabcat_app_json[\'product_name\']\n' \
         '{tab}{tab}action = self.get_action_identifier()\n' \
-        '{tab}{tab}params = {{\'_filter_label\': \'"demo_configuration"\', \'_filter_name\': \'"{{0}}"\'.format(dabcat_app_product), \'_filter_description\': \'"{{0}}"\'.format(action)}}\n' \
+        '{tab}{tab}params = {{\'page_size\': 0, \'_filter_label\': \'"demo_configuration"\', \'_filter_name\': \'"{{0}}"\'.format(dabcat_app_product), \'_filter_description\': \'"{{0}}"\'.format(action)}}\n' \
         '{tab}{tab}success, demo_config_container = _dabcat_get_data(\'container\', params=params)\n' \
         '{tab}{tab}if (success and demo_config_container[\'count\'] > 0) or ({fail_option} == True):\n' \
         '{tab}{tab}{tab}return True\n'.format(tab=tab, fail_option=IMPORTANT_SETTINGS['fail_on_data_not_found'])
@@ -300,7 +300,7 @@ def process_data():
         '{tab}{tab}{tab}{tab}{tab}{tab}return False\n' \
         '{tab}{tab}{tab}{tab}{tab}other_artifact = json.loads(other_artifact)\n' \
         '{tab}{tab}{tab}{tab}if other_artifact[\'cef\'].get(\'vaultId\'):\n' \
-        '{tab}{tab}{tab}{tab}{tab}_, _, vault_info = ph_rules.vault_info(vault_id=other_artifact[\'cef\'][\'vaultId\'].strip(), container_id=other_artifact[\'container\'])\n' \
+        '{tab}{tab}{tab}{tab}{tab}_, _, vault_info = ph_rules.vault_info(other_artifact[\'cef\'][\'vaultId\'].strip())\n' \
         '{tab}{tab}{tab}{tab}{tab}Vault.add_attachment(ph_rules.vault_info(other_artifact[\'cef\'][\'vaultId\'])[2][0][\'path\'], self.get_container_id(), file_name=vault_info[0][\'name\'])\n' \
         '{tab}{tab}{tab}{tab}other_artifact = _dabcat_strip_artifact_identifiers(other_artifact)\n' \
         '{tab}{tab}{tab}{tab}other_artifact[\'container_id\'] = self.get_container_id()\n' \
@@ -346,7 +346,7 @@ def process_data():
         '{tab}{tab}{tab}replacerizer_wholesale = r\'(?:\\*\\*\\*)([^\\*]+)(?:\\*\\*\\*)\'\n' \
         '{tab}{tab}{tab}action_result_data = re.sub(replacerizer_wholesale, lambda x: param.get(x.group().replace(\'*\',\'\')), action_result_data)\n' \
         '{tab}{tab}{tab}return True, action_result_data\n\n' \
-        '{tab}{tab}params = {{\'_filter_label\': \'"demo_configuration"\', \'_filter_name\': \'"{{0}}"\'.format(dabcat_app_product), \'_filter_description\': \'"{{0}}"\'.format(action)}}\n' \
+        '{tab}{tab}params = {{\'page_size\': 0, \'_filter_label\': \'"demo_configuration"\', \'_filter_name\': \'"{{0}}"\'.format(dabcat_app_product), \'_filter_description\': \'"{{0}}"\'.format(action)}}\n' \
         '{tab}{tab}success, demo_config_container = _dabcat_get_data(\'container\', params=params)\n' \
         '{tab}{tab}if (not(success) or demo_config_container[\'count\'] == 0) and {fail_option} == True:\n' \
         '{tab}{tab}{tab}return _dabcat_early_failure(\'There is no data for the action/parameter selected\')\n' \
